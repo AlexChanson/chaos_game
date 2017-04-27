@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -20,7 +21,7 @@ public class Controller {
     public void initialize(){
         //Setting up the canvas in the center of the border pane
         Pane wrapperPane = new Pane();
-        wrapperPane.setStyle("-fx-background-color: transparent");
+        wrapperPane.setStyle("-fx-background-color: black");
         bPane.setCenter(wrapperPane);
         canvas = new Canvas();
         wrapperPane.getChildren().add(canvas);
@@ -35,7 +36,7 @@ public class Controller {
     @FXML
     public void menuNew(){
         Game g = new Game(16, 9, 2, 3);
-        g.play(100);
+        g.play(100000);
         System.out.println("Done, " + g.getOtherPoints().size());
         game.set(g);
         drawGame();
@@ -43,22 +44,20 @@ public class Controller {
 
     private void drawGame(){
         if (game.get() != null){
-            System.out.println("Drawing game");
             double heightRatio = canvas.getHeight() / game.get().getHeight();
             double widthRatio = canvas.getWidth() / game.get().getWidth();
             GraphicsContext gc = canvas.getGraphicsContext2D();
+            gc.clearRect(0,0,canvas.getWidth(), canvas.getHeight());
             gc.setFill(Color.WHITE);
-            game.get().getOtherPoints().forEach(vector -> {
-                gc.strokeOval(vector.getX() * widthRatio, vector.getY() * heightRatio, 5, 5);
-                System.out.println("Drawing at " + vector.getX()*widthRatio + ", " + vector.getY()*heightRatio);
-            });
+            game.get().getOtherPoints().forEach(vector -> gc.fillOval(vector.getX() * widthRatio, vector.getY() * heightRatio, 2, 2));
             gc.setFill(Color.RED);
-            for (Vector v :
-                    game.get().getStartingPoints()) {
-                System.out.println("Drawing at " + v.getX()*widthRatio + ", " + v.getY()*heightRatio);
-                gc.strokeOval(v.getX()*widthRatio, v.getY()*heightRatio, 5, 5);
-            }
+            for (Vector v : game.get().getStartingPoints())
+                gc.fillOval(v.getX()*widthRatio, v.getY()*heightRatio, 8, 8);
         }
+    }
+
+    public Image export(){
+        return null;
     }
 
 }

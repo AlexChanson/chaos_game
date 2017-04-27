@@ -1,8 +1,6 @@
 package geometry;
 
 import utility.Rand;
-
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class Game {
@@ -32,9 +30,9 @@ public class Game {
         if (current == null)
             current = new Vector(Rand.randDouble(width), Rand.randDouble(height));
         for (int i = 0; i < moves; i++) {
-            Vector direction = Rand.choose(startingPoints);
-            otherPoints.add(current);
-            current = direction.minus(current).multiply(1/fraction).add(current);
+            Vector temp = Rand.choose(startingPoints).minus(current).multiply(1.0/fraction).add(current);
+            otherPoints.add(temp);
+            current = new Vector(temp);
         }
     }
 
@@ -42,7 +40,6 @@ public class Game {
         Vector[] placed = new Vector[n];
         for (int i = 0; i < n; i++)
             placed[i] = new Vector(Rand.randDouble(width), Rand.randDouble(height));
-        System.out.println(Arrays.toString(placed));
         return placed;
     }
 

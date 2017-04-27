@@ -7,10 +7,10 @@ public class Game {
     Vector[] startingPoints;
     HashSet<Vector> otherPoints;
     private double width, height;
-    int fraction;
+    double fraction;
     private Vector current = null;
 
-    public Game(double width, double height, int fraction, int startingPoints) {
+    public Game(double width, double height, double fraction, int startingPoints) {
         this.width = width;
         this.height = height;
         this.fraction = fraction;
@@ -18,7 +18,7 @@ public class Game {
         otherPoints = new HashSet<>();
     }
 
-    public Game(Vector[] startingPoints, double width, double height, int fraction) {
+    public Game(Vector[] startingPoints, double width, double height, double fraction) {
         this.startingPoints = startingPoints;
         this.width = width;
         this.height = height;
@@ -30,7 +30,7 @@ public class Game {
         if (current == null)
             current = new Vector(Rand.randDouble(width), Rand.randDouble(height));
         for (int i = 0; i < moves; i++) {
-            Vector temp = Rand.choose(startingPoints).minus(current).multiply(1.0/fraction).add(current);
+            Vector temp = Rand.choose(startingPoints).minus(current).multiply(fraction).add(current);
             otherPoints.add(temp);
             current = new Vector(temp);
         }

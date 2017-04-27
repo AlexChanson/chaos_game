@@ -7,6 +7,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -15,6 +18,10 @@ import javafx.scene.paint.Color;
 public class Controller {
     @FXML
     private BorderPane bPane;
+    @FXML
+    private TextField startPointsField, distanceField;
+    @FXML
+    Slider precisionSlider;
     private Canvas canvas;
     private ObjectProperty<Game> game = new SimpleObjectProperty<>(null);
 
@@ -31,13 +38,20 @@ public class Controller {
 
         canvas.heightProperty().addListener(observable -> drawGame());
         canvas.widthProperty().addListener(observable -> drawGame());
+
+        startPointsField.setTextFormatter(new TextFormatter<>(FxUtils.intFilter));
+        distanceField.setTextFormatter(new TextFormatter<>(FxUtils.intFilter));
     }
 
     @FXML
     public void menuNew(){
-        Game g = new Game(16, 9, 2, 3);
-        g.play(100000);
-        System.out.println("Done, " + g.getOtherPoints().size());
+
+    }
+
+    @FXML
+    public void generate(){
+        Game g = new Game(16, 9, 1.0/Integer.parseInt(distanceField.getText()), Integer.parseInt(startPointsField.getText()));
+        g.play((int) (100000*precisionSlider.getValue()));
         game.set(g);
         drawGame();
     }
@@ -49,7 +63,7 @@ public class Controller {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             gc.clearRect(0,0,canvas.getWidth(), canvas.getHeight());
             gc.setFill(Color.WHITE);
-            game.get().getOtherPoints().forEach(vector -> gc.fillOval(vector.getX() * widthRatio, vector.getY() * heightRatio, 2, 2));
+            game.get().getOtherPoints().forEach(vector -> gc.fillOval(vector.getX() * widthRatio, vector.getY() * heightRatio, 1, 1));
             gc.setFill(Color.RED);
             for (Vector v : game.get().getStartingPoints())
                 gc.fillOval(v.getX()*widthRatio, v.getY()*heightRatio, 8, 8);

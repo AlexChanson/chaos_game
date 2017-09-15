@@ -7,9 +7,9 @@ import java.util.function.Function;
 
 public class Game {
     private Vector[] startingPoints;
-    HashSet<Vector> otherPoints;
+    private HashSet<Vector> otherPoints;
     private double width, height;
-    double fraction;
+    private double fraction;
     private Vector current = null;
 
     public Game(double width, double height, double fraction, int startingPoints) {

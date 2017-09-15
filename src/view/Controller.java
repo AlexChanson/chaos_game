@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -16,6 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import utility.Rand;
 
+import java.util.HashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -26,6 +28,9 @@ public class Controller {
     private TextField startPointsField, distanceField;
     @FXML
     Slider precisionSlider;
+    @FXML
+    private ComboBox<String> rules;
+    private HashMap<String, BiFunction<Vector, Vector[], Vector>> ruleFunctions;
     private Canvas canvas;
     private ObjectProperty<Game> game = new SimpleObjectProperty<>(null);
 
@@ -45,6 +50,12 @@ public class Controller {
 
         startPointsField.setTextFormatter(new TextFormatter<>(FxUtils.intFilter));
         distanceField.setTextFormatter(new TextFormatter<>(FxUtils.intFilter));
+
+        //Adding rules to the selector
+        ruleFunctions = new HashMap<>();
+        rules.getItems().add("Classic");
+        ruleFunctions.put("Classic", (vector, vectors) -> Rand.choose(vectors).minus(vector).multiply(0.5).add(vector));
+
     }
 
     @FXML
@@ -62,8 +73,14 @@ public class Controller {
 
     @FXML
     public void customRule(){
-        Game g = new Game(16, 9, 0, Integer.parseInt(startPointsField.getText()));
-        BiFunction<Vector, Vector[], Vector> rule = (vector, vectors) -> Rand.choose(vectors).minus(vector).multiply(0.33).add(vector);
+        int n = 3;
+        try{
+            n = Integer.parseInt(startPointsField.getText());
+        } catch (NumberFormatException ignored){}
+        Game g = new Game(16, 9, 0, n);
+        BiFunction<Vector, Vector[], Vector> rule = ruleFunctions.get(rules.getSelectionModel().getSelectedItem());
+        if(rule == null)
+            rule = ruleFunctions.get("Classic");
         g.playCustom((int) (100000*precisionSlider.getValue()), rule);
         game.set(g);
         drawGame();

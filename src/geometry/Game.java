@@ -1,6 +1,8 @@
 package geometry;
 
 import utility.Rand;
+import utility.State;
+
 import java.util.HashSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -37,11 +39,11 @@ public class Game {
         }
     }
 
-    public void playCustom(int moves, BiFunction<Vector, Vector[], Vector> rule){
+    public void playCustom(int moves, Function<State, Vector> rule){
         if(current == null)
             current = new Vector(Rand.randDouble(width), Rand.randDouble(height));
         for (int i = 0; i < moves; i++){
-            Vector temp = rule.apply(current, startingPoints);
+            Vector temp = rule.apply(new State(current, startingPoints, i));
             otherPoints.add(temp);
             current = new Vector(temp);
         }

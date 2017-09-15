@@ -16,6 +16,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import utility.Rand;
+import utility.State;
 
 import java.util.HashMap;
 import java.util.function.BiFunction;
@@ -30,7 +31,7 @@ public class Controller {
     Slider precisionSlider;
     @FXML
     private ComboBox<String> rules;
-    private HashMap<String, BiFunction<Vector, Vector[], Vector>> ruleFunctions;
+    private HashMap<String, Function<State, Vector>> ruleFunctions;
     private Canvas canvas;
     private ObjectProperty<Game> game = new SimpleObjectProperty<>(null);
 
@@ -53,8 +54,22 @@ public class Controller {
 
         //Adding rules to the selector
         ruleFunctions = new HashMap<>();
+
+        rules.getItems().add("Sin");
+        ruleFunctions.put("Sin", state -> Rand.choose(state.getStartingPoints()).minus(state.getCurrent()).multiply((Math.abs(Math.sin(state.getIterration())))).add(state.getCurrent()));
+
         rules.getItems().add("Classic");
-        ruleFunctions.put("Classic", (vector, vectors) -> Rand.choose(vectors).minus(vector).multiply(0.5).add(vector));
+        ruleFunctions.put("Classic", (state) -> Rand.choose(state.getStartingPoints()).minus(state.getCurrent()).multiply(0.5).add(state.getCurrent()));
+
+        rules.getItems().add("Random");
+        ruleFunctions.put("Random", ((state) -> Rand.choose(state.getStartingPoints()).minus(state.getCurrent()).multiply(Rand.randDouble(1)).add(state.getCurrent())));
+
+        rules.getItems().add("Stuff");
+        ruleFunctions.put("Stuff", state -> {
+            Vector[] starts = state.getStartingPoints();
+            Vector start = starts[state.getIterration() % starts.length];
+            return start.minus(state.getCurrent().multiply(0.5));
+        });
 
     }
 
@@ -66,7 +81,7 @@ public class Controller {
     @FXML
     public void generate(){
         Game g = new Game(16, 9, 1.0/Integer.parseInt(distanceField.getText()), Integer.parseInt(startPointsField.getText()));
-        g.play((int) (100000*precisionSlider.getValue()));
+        g.play((int) (200000*precisionSlider.getValue()));
         game.set(g);
         drawGame();
     }
@@ -78,10 +93,10 @@ public class Controller {
             n = Integer.parseInt(startPointsField.getText());
         } catch (NumberFormatException ignored){}
         Game g = new Game(16, 9, 0, n);
-        BiFunction<Vector, Vector[], Vector> rule = ruleFunctions.get(rules.getSelectionModel().getSelectedItem());
+        Function<State, Vector> rule = ruleFunctions.get(rules.getSelectionModel().getSelectedItem());
         if(rule == null)
             rule = ruleFunctions.get("Classic");
-        g.playCustom((int) (100000*precisionSlider.getValue()), rule);
+        g.playCustom((int) (200000*precisionSlider.getValue()), rule);
         game.set(g);
         drawGame();
     }

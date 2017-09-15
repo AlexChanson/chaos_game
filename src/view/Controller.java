@@ -14,6 +14,10 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import utility.Rand;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Controller {
     @FXML
@@ -52,6 +56,15 @@ public class Controller {
     public void generate(){
         Game g = new Game(16, 9, 1.0/Integer.parseInt(distanceField.getText()), Integer.parseInt(startPointsField.getText()));
         g.play((int) (100000*precisionSlider.getValue()));
+        game.set(g);
+        drawGame();
+    }
+
+    @FXML
+    public void customRule(){
+        Game g = new Game(16, 9, 0, Integer.parseInt(startPointsField.getText()));
+        BiFunction<Vector, Vector[], Vector> rule = (vector, vectors) -> Rand.choose(vectors).minus(vector).multiply(0.33).add(vector);
+        g.playCustom((int) (100000*precisionSlider.getValue()), rule);
         game.set(g);
         drawGame();
     }

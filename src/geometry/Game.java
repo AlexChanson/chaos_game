@@ -2,9 +2,11 @@ package geometry;
 
 import utility.Rand;
 import java.util.HashSet;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Game {
-    Vector[] startingPoints;
+    private Vector[] startingPoints;
     HashSet<Vector> otherPoints;
     private double width, height;
     double fraction;
@@ -18,11 +20,10 @@ public class Game {
         otherPoints = new HashSet<>();
     }
 
-    public Game(Vector[] startingPoints, double width, double height, double fraction) {
-        this.startingPoints = startingPoints;
+    public Game(Function<Long,Vector[]> startingPoints, double width, double height, long seed) {
+        this.startingPoints = startingPoints.apply(seed);
         this.width = width;
         this.height = height;
-        this.fraction = fraction;
         otherPoints = new HashSet<>();
     }
 
@@ -31,6 +32,16 @@ public class Game {
             current = new Vector(Rand.randDouble(width), Rand.randDouble(height));
         for (int i = 0; i < moves; i++) {
             Vector temp = Rand.choose(startingPoints).minus(current).multiply(fraction).add(current);
+            otherPoints.add(temp);
+            current = new Vector(temp);
+        }
+    }
+
+    public void playCustom(int moves, BiFunction<Vector, Vector[], Vector> rule){
+        if(current == null)
+            current = new Vector(Rand.randDouble(width), Rand.randDouble(height));
+        for (int i = 0; i < moves; i++){
+            Vector temp = rule.apply(current, startingPoints);
             otherPoints.add(temp);
             current = new Vector(temp);
         }

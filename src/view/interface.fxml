@@ -22,6 +22,7 @@
                 <Menu mnemonicParsing="false" text="File">
                   <items>
                     <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem mnemonicParsing="false" text="Save" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -45,7 +46,7 @@
                         <Label text="Precision" />
                         <Slider fx:id="precisionSlider" blockIncrement="0.1" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="3.0" />
                         <Label text="Nb. Of Starting Points" />
-                        <TextField fx:id="startPointsField" promptText="3">
+                        <TextField fx:id="startPointsField" text="3">
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </VBox.margin>

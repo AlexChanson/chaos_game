@@ -15,10 +15,12 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import utility.Pixel;
 import utility.Rand;
 import utility.State;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -64,12 +66,6 @@ public class Controller {
         rules.getItems().add("Random");
         ruleFunctions.put("Random", ((state) -> Rand.choose(state.getStartingPoints()).minus(state.getCurrent()).multiply(Rand.randDouble(1)).add(state.getCurrent())));
 
-        rules.getItems().add("Stuff");
-        ruleFunctions.put("Stuff", state -> {
-            Vector[] starts = state.getStartingPoints();
-            Vector start = starts[state.getIterration() % starts.length];
-            return start.minus(state.getCurrent().multiply(0.5));
-        });
 
     }
 
@@ -115,7 +111,7 @@ public class Controller {
         }
     }
 
-    public Image export(){
+    public HashSet<Pixel> getPixels(HashSet<Vector> vectors, double scale){
         return null;
     }
 

@@ -51,7 +51,21 @@ public class Pixel implements Comparable{
 
     @Override
     public int compareTo(Object o) {
-        //TODO make pixels sortable
-        return 0;
+        if(o == null)
+            throw new NullPointerException();
+        Pixel p = (Pixel) o;
+
+        if (this.y < p.getY())
+            return -1;
+        if (this.y == p.getY() && this.x < p.getX())
+            return -1;
+        if (this.y == p.getY() && this.x == p.getX())
+            return 0;
+        return 1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Pixel && ((Pixel) obj).x == x && ((Pixel) obj).y == y;
     }
 }

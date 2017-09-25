@@ -15,12 +15,19 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import utility.Pixel;
 import utility.Rand;
 import utility.State;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -95,6 +102,9 @@ public class Controller {
         g.playCustom((int) (200000*precisionSlider.getValue()), rule);
         game.set(g);
         drawGame();
+
+        //Vector demo = game.get().getStartingPoints()[0];
+        //System.out.printf("debug : x=%f, y=%f", demo.getX(), demo.getY());
     }
 
     private void drawGame(){
@@ -111,8 +121,65 @@ public class Controller {
         }
     }
 
-    public HashSet<Pixel> getPixels(HashSet<Vector> vectors, double scale){
-        return null;
+    public HashSet<Pixel> getPixels(HashSet<Vector> vectors, double scaleX, double scaleY){
+        HashSet<Pixel> result = new HashSet<>();
+        vectors.forEach(vector -> result.add(new Pixel((int)(vector.getX()*scaleX), (int)(vector.getY()*scaleY), new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff})));
+        return result;
+    }
+
+    @FXML
+    public void saveImage(){
+        int width = 1920, height = 1080;
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save a level file");
+        fc.setInitialDirectory(new File(System.getProperty("user.dir")));
+
+        Optional<File> file = Optional.ofNullable(fc.showSaveDialog(new Stage()));
+        if (file.isPresent()){
+
+            double heightRatio = width / game.get().getHeight();
+            double widthRatio = height / game.get().getWidth();
+
+            Set<Pixel> existingPixels = getPixels(game.get().getOtherPoints(), heightRatio, widthRatio);
+
+            Set<Pixel> emptyPixels = new HashSet<>();
+            for (int i = 0; i < 1920; ++i){
+                for (int j = 0; j < 1080; ++j)
+                    emptyPixels.add(new Pixel(i, j, new byte[]{0x00, 0x00, 0x00}));
+            }
+
+            emptyPixels.removeAll(existingPixels);
+            emptyPixels.addAll(existingPixels);
+            List<Pixel> pixels = new ArrayList<>(emptyPixels);
+
+            Collections.sort(pixels);
+
+            List<Byte> bytes = new ArrayList<>();
+            pixels.forEach(pixel -> {
+                bytes.add(pixel.getColor()[0]);
+                bytes.add(pixel.getColor()[1]);
+                bytes.add(pixel.getColor()[2]);
+            });
+
+
+            byte[] octets = new byte[bytes.size()];
+            for (int i = 0; i < bytes.size(); ++i)
+                octets[i] = bytes.get(i);
+
+            DataBuffer buffer = new DataBufferByte(octets, octets.length);
+
+            WritableRaster raster = Raster.createInterleavedRaster(buffer, width, height, 3 * width, 3, new int[] {0, 1, 2}, (Point)null);
+            ColorModel cm = new ComponentColorModel(ColorModel.getRGBdefault().getColorSpace(), false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+            BufferedImage image = new BufferedImage(cm, raster, true, null);
+
+            try {
+                ImageIO.write(image, "png", file.get());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 }

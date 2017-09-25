@@ -62,10 +62,11 @@ public class Pixel implements Comparable{
         if (this.y == p.getY() && this.x == p.getX())
             return 0;
         return 1;
+
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Pixel && ((Pixel) obj).x == x && ((Pixel) obj).y == y;
+        return (obj instanceof Pixel) && (((Pixel) obj).x == x && ((Pixel) obj).y == y);
     }
 }

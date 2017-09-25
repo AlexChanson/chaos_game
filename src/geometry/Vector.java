@@ -139,6 +139,10 @@ public class Vector {
         return new Vector(this.x*scale, this.y*scale);
     }
 
+    public Vector multiply(double sX, double sY){
+        return new Vector(this.x*sX, this.y*sY);
+    }
+
     /**
      *
      * @param scale
